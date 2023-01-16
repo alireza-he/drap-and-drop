@@ -1,8 +1,8 @@
-import React, { Component } from 'react';
+import React, {Component} from 'react';
 import ReactDOM from 'react-dom';
 import uuid from 'uuid/v4';
 import styled from 'styled-components';
-import { DragDropContext, Droppable, Draggable } from 'react-beautiful-dnd';
+import {DragDropContext, Droppable, Draggable} from 'react-beautiful-dnd';
 
 const reorder = (list, startIndex, endIndex) => {
     const result = Array.from(list);
@@ -18,7 +18,7 @@ const copy = (source, destination, droppableSource, droppableDestination) => {
     const destClone = Array.from(destination);
     const item = sourceClone[droppableSource.index];
 
-    destClone.splice(droppableDestination.index, 0, { ...item, id: uuid() });
+    destClone.splice(droppableDestination.index, 0, {...item, id: uuid()});
     return destClone;
 };
 
@@ -37,14 +37,14 @@ const move = (source, destination, droppableSource, droppableDestination) => {
 };
 
 const Content = styled.div`
-    margin-right: 200px;
+    margin-right: 0;
 `;
 
 const Item = styled.div`
     display: flex;
     user-select: none;
     padding: 0.5rem;
-    margin: 0 0 0.5rem 0;
+    margin: 0.5rem;
     align-items: flex-start;
     align-content: flex-start;
     line-height: 1.5;
@@ -77,18 +77,20 @@ const List = styled.div`
     border: 1px
         ${props => (props.isDraggingOver ? 'dashed #000' : 'solid #ddd')};
     background: #fff;
-    padding: 0.5rem 0.5rem 0;
+    padding: 0.5rem 0.5rem;
     border-radius: 3px;
     flex: 0 0 150px;
     font-family: sans-serif;
 `;
 
 const Kiosk = styled(List)`
-    position: absolute;
-    top: 0;
-    right: 0;
+    position: relative;
     bottom: 0;
-    width: 200px;
+    right: 0;
+    left:0;
+    display: flex;
+    align-items:center;
+    height: 10vh;
 `;
 
 const Container = styled(List)`
@@ -102,7 +104,7 @@ const Notice = styled.div`
     align-content: center;
     justify-content: center;
     padding: 0.5rem;
-    margin: 0 0.5rem 0.5rem;
+    margin: 0 0 0.5rem;
     border: 1px solid transparent;
     line-height: 1.5;
     color: #aaa;
@@ -112,7 +114,7 @@ const Button = styled.button`
     display: flex;
     align-items: center;
     align-content: center;
-    justify-content: center;
+    justify-content: center;    
     margin: 0.5rem;
     padding: 0.5rem;
     color: #000;
@@ -155,7 +157,7 @@ class App extends Component {
         [uuid()]: []
     };
     onDragEnd = result => {
-        const { source, destination } = result;
+        const {source, destination} = result;
 
         console.log('==> result', result);
 
@@ -197,55 +199,57 @@ class App extends Component {
     };
 
     addList = e => {
-        this.setState({ [uuid()]: [] });
+        this.setState({[uuid()]: []});
     };
 
     render() {
         return (
             <DragDropContext onDragEnd={this.onDragEnd}>
-                <Droppable droppableId="ITEMS" isDropDisabled={true}>
-                    {(provided, snapshot) => (
-                        <Kiosk
-                            innerRef={provided.innerRef}
-                            isDraggingOver={snapshot.isDraggingOver}>
-                            {ITEMS.map((item, index) => (
-                                <Draggable
-                                    key={item.id}
-                                    draggableId={item.id}
-                                    index={index}>
-                                    {(provided, snapshot) => (
-                                        <React.Fragment>
-                                            <Item
-                                                innerRef={provided.innerRef}
-                                                {...provided.draggableProps}
-                                                {...provided.dragHandleProps}
-                                                isDragging={snapshot.isDragging}
-                                                style={
-                                                    provided.draggableProps
-                                                        .style
-                                                }>
-                                                {item.content}
-                                            </Item>
-                                            {snapshot.isDragging && (
-                                                <Clone>{item.content}</Clone>
-                                            )}
-                                        </React.Fragment>
-                                    )}
-                                </Draggable>
-                            ))}
-                        </Kiosk>
-                    )}
-                </Droppable>
+                <Container>
+                    <Droppable droppableId="ITEMS" isDropDisabled={true}>
+                        {(provided, snapshot) => (
+                            <Kiosk
+                                innerRef={provided.innerRef}
+                                isDraggingOver={snapshot.isDraggingOver}>
+                                {ITEMS.map((item, index) => (
+                                    <Draggable
+                                        key={item.id}
+                                        draggableId={item.id}
+                                        index={index}>
+                                        {(provided, snapshot) => (
+                                            <React.Fragment>
+                                                <Item
+                                                    innerRef={provided.innerRef}
+                                                    {...provided.draggableProps}
+                                                    {...provided.dragHandleProps}
+                                                    isDragging={snapshot.isDragging}
+                                                    style={
+                                                        provided.draggableProps
+                                                            .style
+                                                    }>
+                                                    {item.content}
+                                                </Item>
+                                                {snapshot.isDragging && (
+                                                    <Clone>{item.content}</Clone>
+                                                )}
+                                            </React.Fragment>
+                                        )}
+                                    </Draggable>
+                                ))}
+                            </Kiosk>
+                        )}
+                    </Droppable>
+                </Container>
                 <Content>
-                    <Button onClick={this.addList}>
-                        <svg width="24" height="24" viewBox="0 0 24 24">
-                            <path
-                                fill="currentColor"
-                                d="M19,13H13V19H11V13H5V11H11V5H13V11H19V13Z"
-                            />
-                        </svg>
-                        <ButtonText>Add List</ButtonText>
-                    </Button>
+                    {/*<Button onClick={this.addList}>*/}
+                    {/*    <svg width="24" height="24" viewBox="0 0 24 24">*/}
+                    {/*        <path*/}
+                    {/*            fill="currentColor"*/}
+                    {/*            d="M19,13H13V19H11V13H5V11H11V5H13V11H19V13Z"*/}
+                    {/*        />*/}
+                    {/*    </svg>*/}
+                    {/*    <ButtonText>Add List</ButtonText>*/}
+                    {/*</Button>*/}
                     {Object.keys(this.state).map((list, i) => {
                         console.log('==> list', list);
                         return (
@@ -255,9 +259,17 @@ class App extends Component {
                                         innerRef={provided.innerRef}
                                         isDraggingOver={
                                             snapshot.isDraggingOver
-                                        }>
-                                        {this.state[list].length
-                                            ? this.state[list].map(
+                                        }
+                                        style={{
+                                            position: "fixed",
+                                            bottom: 0,
+                                            left: "0.5rem",
+                                            right: "0.5rem",
+                                            minHeight: "15rem"
+                                        }}
+                                    >
+                                        {this.state[list].length ?
+                                            this.state[list].map(
                                                 (item, index) => (
                                                     <Draggable
                                                         key={item.id}
@@ -298,10 +310,13 @@ class App extends Component {
                                                     </Draggable>
                                                 )
                                             )
-                                            : !provided.placeholder && (
-                                            <Notice>
-                                                Drop items here
-                                            </Notice>
+                                            :
+                                            !provided.placeholder && (
+                                                <Content style={{display: "flex",alignItems:"center", justifyContent:"center",minHeight:"15rem"}}>
+                                                    <Notice>
+                                                        Drop items here
+                                                    </Notice>
+                                                </Content>
                                         )}
                                         {provided.placeholder}
                                     </Container>
@@ -315,4 +330,5 @@ class App extends Component {
     }
 }
 
-ReactDOM.render(<App />, document.getElementById('root'));
+
+ReactDOM.render(<App/>, document.getElementById('root'));
